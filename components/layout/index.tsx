@@ -1,41 +1,70 @@
 import { ReactNode } from 'react'
+import { useRecoilState } from 'recoil'
 import {
-  Box,
-  Drawer, DrawerContent,
-  useColorModeValue,
-  useDisclosure,
+	Box,
+	VStack,
+	DrawerBody,
+	DrawerCloseButton,
+	DrawerContent,
+	DrawerHeader,
+	HStack,
+	useColorModeValue,
+	useDisclosure,
+	Drawer,
 } from '@chakra-ui/react'
-import { Header } from './header'
-import { Sidebar } from './sidebar'
 
-interface IProps {
-  children: ReactNode
+import { DashboardHeader } from './Header'
+import { NavLinks, Sidebar } from './Sidebar'
+import { LanguagesSwitch } from '../LanguagesSwitch'
+import { ColorModeToggle } from '../ColorModeToggle'
+import { isMiniState } from '../../src/state'
+
+interface LayoutProps{
+	children: ReactNode;
 }
 
-export const Layout = ({ children }: IProps) => {
-  const { isOpen, onOpen, onClose } = useDisclosure()
-  return (
-    <Box minH="100vh" bg={useColorModeValue('gray.100', 'gray.900')}>
-      {/* md sidebar */}
-      <Sidebar onClose={onClose} display={{ base: 'none', md: 'block' }}/>
-      {/* drawer sidebar */}
-      <Drawer
-        autoFocus={false}
-        isOpen={isOpen}
-        placement="left"
-        onClose={onClose}
-        returnFocusOnClose={false}
-        onOverlayClick={onClose}
-        size="full"
-      >
-        <DrawerContent>
-          <Sidebar onClose={onClose}/>
-        </DrawerContent>
-      </Drawer>
-      <Header onOpen={onOpen}/>
-      <Box minH="100%" ml={{ base: 0, md: 60 }} p="4">
-        {children}
-      </Box>
-    </Box>
-  )
+export const Layout = ({ children }: LayoutProps) => {
+	const { isOpen, onOpen, onClose } = useDisclosure()
+	const drawerBgColor = useColorModeValue('white', 'black')
+	const [mini, setMini] = useRecoilState(isMiniState)
+
+	return (
+		<Box minH="100vh">
+			<Sidebar
+				onClose={onClose}
+				mini={mini}
+				setMini={setMini}
+				display={{ base: 'none', md: 'block' }}
+			/>
+			<Drawer
+				isOpen={isOpen}
+				onClose={onClose}
+				size={'full'}
+				placement={'left'}
+			>
+				<DrawerContent backgroundColor={drawerBgColor}>
+					<DrawerHeader>
+						<DrawerCloseButton />
+					</DrawerHeader>
+					<DrawerBody>
+						<VStack>
+							<HStack>
+								<LanguagesSwitch />
+								<ColorModeToggle />
+							</HStack>
+							<NavLinks mini={false} />
+						</VStack>
+					</DrawerBody>
+				</DrawerContent>
+			</Drawer>
+			<DashboardHeader
+				onOpen={onOpen}
+				mini={mini}
+				height={'6vh'}
+			/>
+			<Box as="main" ml={{ base: 0, md: mini ? 20 : 60 }} p={3}>
+				{children}
+			</Box>
+		</Box>
+	)
 }

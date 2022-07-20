@@ -1,17 +1,21 @@
-import type { AppProps } from 'next/app'
+import { AppProps } from 'next/app'
 import { RecoilRoot } from 'recoil'
+import { appWithTranslation } from 'next-i18next'
 import { ChakraProvider } from '@chakra-ui/react'
-import chakraTheme from '../src/chakra-theme'
-import '../styles/globals.css'
 
-function MyApp ({ Component, pageProps }: AppProps) {
-  return (
-    <RecoilRoot>
-      <ChakraProvider theme={chakraTheme}>
-        <Component {...pageProps} />
-      </ChakraProvider>
-    </RecoilRoot>
-  )
+import theme from '../src/theme'
+import Layouts from '../components/layouts'
+
+function MyApp({ Component, pageProps }: AppProps) {
+	return (
+		<RecoilRoot>
+			<ChakraProvider theme={theme}>
+				<Layouts>
+					<Component {...pageProps} />
+				</Layouts>
+			</ChakraProvider>
+		</RecoilRoot>
+	)
 }
 
-export default MyApp
+export default appWithTranslation(MyApp)

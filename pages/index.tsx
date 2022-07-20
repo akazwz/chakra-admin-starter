@@ -1,12 +1,23 @@
-import type { NextPage } from 'next'
-import { Layout } from '../components/layout'
+import { Heading } from '@chakra-ui/react'
+import { GetStaticProps } from 'next'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { useTranslation } from 'next-i18next'
 
-const Home: NextPage = () => {
-  return (
-    <Layout>
-      Home
-    </Layout>
-  )
+export const getStaticProps: GetStaticProps = async({ locale }) => {
+	return {
+		props: {
+			...(await serverSideTranslations(locale || 'en', ['common', 'index'])),
+		},
+	}
 }
 
-export default Home
+const Homepage = () => {
+	const {t} = useTranslation('common')
+	return (
+		<Heading>
+			{t('index.home')}
+		</Heading>
+	)
+}
+
+export default Homepage
